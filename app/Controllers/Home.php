@@ -4,6 +4,17 @@ namespace App\Controllers;
 
 class Home extends BaseController
 {
+    public function __construct()
+    {
+        $this->data['view']     = 'dashboard';
+        $this->data['menu']     = '@MEGAVISION';
+        $this->data['slug']     = 'dashboard';
+        $this->data['required'] = '<span style="color:red">* Required</span></br></br>';
+
+        $this->session             = \Config\Services::session();
+        $this->data['session']     = $this->session->get();
+    }
+
     public function index(): string
     {
         return view('welcome_message');
@@ -11,11 +22,6 @@ class Home extends BaseController
 
     public function dashboard()
     {
-        $header['title'] = 'Dashboard';
-        echo view('partial/header', $header);
-        echo view('partial/top_menu');
-        echo view('partial/side_menu');
-        echo view('dashboard/index');
-        echo view('partial/footer');
+        $this->template->views($this->data['view'] . '/index', $this->data, $this->data['view'] . '/scripts');
     }
 }

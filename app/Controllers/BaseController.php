@@ -10,6 +10,7 @@ use CodeIgniter\HTTP\ResponseInterface;
 use Psr\Log\LoggerInterface;
 use CodeIgniter\Validation\Exceptions\ValidationException;
 use Config\Services;
+use App\Libraries\Template;
 
 /**
  * Class BaseController
@@ -50,6 +51,7 @@ abstract class BaseController extends Controller
      */
     public function initController(RequestInterface $request, ResponseInterface $response, LoggerInterface $logger)
     {
+        $this->template = new Template();
         // Do Not Edit This Line
         parent::initController($request, $response, $logger);
 

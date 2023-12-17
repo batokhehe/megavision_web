@@ -12,4 +12,5 @@ $routes->group('api', static function ($routes) {
     $routes->post('auth/register', 'Auth::register');
     $routes->post('auth/login', 'Auth::login');
     $routes->post('dashboard', 'Dashboard::data');
+    $routes->get('dashboard', 'Dashboard::index');
 });

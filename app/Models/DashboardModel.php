@@ -58,7 +58,7 @@ class DashboardModel extends Model
 
     public function total_income($date_start, $date_end)
     {
-        $builder = $this->db->table($this->table)->select('SUM(order_amount) AS order_amount')
+        $builder = $this->db->table($this->table)->select('COALESCE(SUM(order_amount), 0) AS order_amount')
             ->where('order_date >=', $date_start)
             ->where('order_date <=', $date_end);
 
@@ -72,7 +72,7 @@ class DashboardModel extends Model
 
     public function total_income_last_month($date)
     {
-        $builder = $this->db->table($this->table)->select('SUM(order_amount) AS order_amount')
+        $builder = $this->db->table($this->table)->select('COALESCE(SUM(order_amount), 0) AS order_amount')
             ->where("month(order_date) = month('" . $date . "') - 1")
             ->where("year(order_date) = year('" . $date . "')");
 
@@ -111,5 +111,21 @@ class DashboardModel extends Model
             return 0;
 
         return $result;
+    }
+
+    public function getAll($request, $limit, $page, $query)
+    {
+        return $this->db->table($this->table)->like('client_name', $query)
+            ->orLike('order_date', $query)
+            ->orLike('client_phone', $query)
+            ->orLike('employee_name', $query)
+            ->orLike('office_name', $query)
+            ->orderBy('order_date', 'DESC')
+            ->get($limit, $page)->getResult();
+    }
+
+    public function getAllCounter()
+    {
+        return $this->db->table($this->table)->countAllResults();
     }
 }
