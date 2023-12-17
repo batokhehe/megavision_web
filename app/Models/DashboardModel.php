@@ -28,6 +28,15 @@ class DashboardModel extends Model
         'total_income_last_month',
     ];
 
+    protected $columns = [
+        'client_name',
+        'order_date',
+        'order_amount',
+        'client_phone',
+        'employee_name',
+        'office_name',
+    ];
+
     public function total_sales($date_start, $date_end)
     {
         $builder = $this->db->table($this->table)
@@ -113,15 +122,81 @@ class DashboardModel extends Model
         return $result;
     }
 
-    public function getAll($request, $limit, $page, $query)
+    public function getAll($request)
     {
-        return $this->db->table($this->table)->like('client_name', $query)
-            ->orLike('order_date', $query)
-            ->orLike('client_phone', $query)
-            ->orLike('employee_name', $query)
-            ->orLike('office_name', $query)
-            ->orderBy('order_date', 'DESC')
-            ->get($limit, $page)->getResult();
+        // return $this->db->table($this->table)->like('client_name', $query)
+        //     ->orLike('order_date', $query)
+        //     ->orLike('client_phone', $query)
+        //     ->orLike('employee_name', $query)
+        //     ->orLike('office_name', $query)
+        //     ->orderBy('order_date', 'DESC')
+        //     ->get($limit, $page)->getResult();
+
+        /* PREPARE DATA */
+        $sql = $this->db->table($this->table);
+        $db_result = $sql->get();
+        $db_query = $sql->getCompiledSelect();
+        $db_columns = $this->columns;
+        $db_rows_count = $db_result->getNumRows();
+
+        $dt_column_count = 0;
+        foreach ($this->columns as $key => $column) {
+            $dt_column_count++;
+        }
+
+        $dt_search = $request->getGet('search')['value'];
+
+        /* SEARCH */
+        $where = '';
+        if ($dt_search != '') {
+            $iterator = 0;
+            foreach ($this->columns as $key => $column) {
+                $where .= 'LOWER(' . $this->table . '.' . $column . ') LIKE \'%' . $dt_search . '%\' ';
+                if ($iterator < $dt_column_count-1) {
+                    $where .= ' OR ';
+                }
+                $iterator++;
+            }
+        }
+
+
+
+        if ($where != '') {
+            if(strpos($db_query, 'WHERE') !== false){
+                $db_query .= " AND " . $where;
+            }else{
+                $db_query .= " WHERE " . $where;
+            }
+
+            $db_rows_count = $this->db->query($db_query)->getNumRows();
+        }
+
+        /* SORTING */
+        $dtColumns = [];
+        if($request->getGet('order')){
+            foreach ($request->getGet('columns') as $column){
+                if($column['orderable'] !== "false"){
+                    $dtColumns[] = $column['data'];
+                }else{
+                    $dtColumns[] = null;
+                }
+            }
+            $db_query .= " ORDER BY {$dtColumns[$request->getGet('order')[0]['column']]} {$request->getGet('order')[0]['dir']}";
+        }
+
+        /* LIMIT */
+        $start  = $request->getGet('start');
+        $length = $request->getGet('length');
+        $db_query .= " LIMIT {$length} OFFSET {$start}";
+
+        $return['list'] = $this->db->query($db_query)->getResult();
+        $return['columns'] = $db_columns;
+        $return['columns_count'] = $dtColumns;
+        $return['rows_count'] = $db_rows_count;
+        $return['draw'] = $request->getGet('draw');
+        $return['start'] = $request->getGet('start');
+
+        return $return;
     }
 
     public function getAllCounter()

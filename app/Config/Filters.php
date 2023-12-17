@@ -43,7 +43,7 @@ class Filters extends BaseConfig
             // 'invalidchars',
         ],
         'after' => [
-            'toolbar',
+            // 'toolbar',
             // 'honeypot',
             // 'secureheaders',
         ],
@@ -70,11 +70,10 @@ class Filters extends BaseConfig
      * 'isLoggedIn' => ['before' => ['account/*', 'profiles/*']]
      */
     public array $filters = [
-        'auth' => [
-            'before' => [
-                'client/*',
-                'client'
-            ],
-        ]
+        // 'auth' => [
+        //     'before' => [
+        //         'api/dashboard',
+        //     ],
+        // ]
     ];
 }

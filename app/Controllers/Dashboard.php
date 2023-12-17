@@ -13,37 +13,16 @@ class Dashboard extends BaseController
 {
     public function index()
     {
-        $limit = 0;
-        $page  = 0;
-        $query = '';
-
-        if ($this->request->getGet('limit') || $this->request->getGet('page')) {
-            $limit = $this->request->getGet('limit');
-            $page  = $limit * $this->request->getGet('page');
-        }
-        if ($this->request->getGet('query')) {
-            $query = $this->request->getGet('query');
-        }
-
-        if ($this->request->getGet('length') || $this->request->getGet('start')) {
-            $limit = $this->request->getGet('length');
-            $page  = $this->request->getGet('start');
-        }
-        if ($this->request->getGet('search')) {
-            $query = $this->request->getGet('search')['value'];
-        }
-
         $model = new DashboardModel();
-        $data    = $model->getAll($this->request, $limit, $page, $query);
-        $counter = $model->getAllCounter();
+        $data    = $model->getAll($this->request);
 
         $response = [
             'status'          => 200,
             'error'           => null,
-            'message'        => 'Recent Order Data ' . count($data) . ' Found',
-            'data'            => $data,
-            'recordsTotal'    => $counter,
-            'recordsFiltered' => $counter,
+            'message'           => 'Recent Order Data ' . count($data) . ' Found',
+            'data'            => $data['list'],
+            'recordsTotal'    => count($data['list']),
+            'recordsFiltered' => $data['rows_count'],
         ];
         return $this->getResponse($response);
     }

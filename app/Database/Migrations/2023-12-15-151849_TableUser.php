@@ -30,7 +30,11 @@ class TableUser extends Migration
                 'type' => 'VARCHAR',
                 'constraint' => '255',
                 'null' => false,
-                'unique' => true
+            ],
+            'client_id' => [
+                'type' => 'VARCHAR',
+                'constraint' => '100',
+                'null' => false
             ],
             'updated_at' => [
                 'type' => 'datetime',

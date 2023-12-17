@@ -3,7 +3,7 @@
         var start_date = moment();
         var end_date = moment().add(5, 'day');
 
-        table = $('.datatables').DataTable({
+        var table = $('.datatables').DataTable({
             processing: true,
             searching: true,
             serverSide: true,
@@ -33,12 +33,27 @@
                     data: 'office_name'
                 },
                 {
-                    data: null
+                    'mRender': function (data, type, row) {
+                        return '<a class="btn btn-xs bg-gradient-primary" href="<?php echo base_url(); ?>detail/' + row.id + '"><i class="fa fa-edit"></i> Detail</a>';
+                    }
                 }
             ],
             order: [
                 [1, "asc"]
             ]
+        });
+
+        // Apply the search
+        table.columns().every(function() {
+            var that = this;
+
+            $('input', this.header()).on('keyup change', function() {
+                if (that.search() !== this.value) {
+                    that
+                        .search(this.value)
+                        .draw();
+                }
+            });
         });
 
         var colors = ['rgb(14, 186, 169)', 'rgb(255, 198, 193)', 'rgb(132, 233, 255)', 'rgb(58, 171, 88)', 'rgb(221, 79, 64)', 'rgb(255, 244, 158)', 'rgb(216, 180, 255)', 'rgb(185, 255, 192)', 'rgb(240, 190, 144)', 'rgb(73, 149, 241)'];
