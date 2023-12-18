@@ -19,6 +19,7 @@ class Auth extends BaseController
     {
         $rules = [
             'name' => 'required',
+            'employee_id' => 'required',
             'email' => 'required|min_length[6]|max_length[50]|valid_email|is_unique[users.email]',
             'password' => 'required|min_length[8]|max_length[255]'
         ];
@@ -91,7 +92,7 @@ class Auth extends BaseController
                     [
                         'message' => 'User authenticated successfully',
                         'user' => $user,
-                        'access_token' => getSignedJWTForUser($emailAddress)
+                        'access_token' => getSignedJWTForUser($user['employee_id'], $emailAddress)
                     ]
                 );
         } catch (Exception $exception) {
