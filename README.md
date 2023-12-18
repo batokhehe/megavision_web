@@ -8,6 +8,8 @@ php migrate
 php spark db:seed TestSeeder
 php spark serve --host [your_ip] --port [your_port]
 
+access: [your_ip]:[your_port]/dashboard
+
 Postman Collection 
 [Megavision.postman_collection.json](https://github.com/batokhehe/megavision_web/files/13699143/Megavision.postman_collection.json)
 
